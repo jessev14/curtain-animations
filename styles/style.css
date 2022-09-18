@@ -1,0 +1,30 @@
+div.curtain-animations-curtain {
+    position: absolute;
+    height: 100vh;
+    width: 100vw;
+    z-index: 10000;
+
+    background: linear-gradient(180deg, rgb(0, 0, 0, 1) 0%, rgb(0, 0, 0, 0) 0%);
+}
+
+div.curtain-animations-curtain div.curtain-animations-text {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    height: 75%;
+
+    font-size: 60px;
+    color: white;
+
+    opacity: 0;
+}
+
+div.curtain-animations-curtain img.curtain-animations-image {
+    position: fixed;
+    top: 40vh;
+    left: 10vw;
+
+    opacity: 0;
+
+    /* transition: left 3s ease-in-out; */
+}

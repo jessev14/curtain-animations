@@ -1,0 +1,10 @@
+{
+    "curtain-animations": {
+        "CurtainAnimation": "Curtain Animation",
+        "dialog": {
+            "title": "Create New Curtain Animation",
+            "play": "Play",
+            "save": "Save as Macro"
+        }
+    }
+}
