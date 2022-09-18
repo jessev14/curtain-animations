@@ -1,5 +1,5 @@
 const moduleID = 'curtain-animations';
-let socket, fps;
+let socket;
 
 const localize = key => game.i18n.localize(`${moduleID}.${key}`);
 
@@ -14,12 +14,11 @@ const delay = async (duration, log = null) => {
 
 
 Hooks.once('init', () => {
-    window.runAnimation = runAnimation;
+    game.modules.get(moduleID).api = {
+        pushAnimation
+    };
 });
 
-Hooks.once('ready', () => {
-    fps = game.settings.get('core', 'maxFPS');
-});
 
 Hooks.once('socketlib.ready', () => {
     socket = socketlib.registerModule(moduleID);
@@ -39,6 +38,10 @@ Hooks.on('getSceneControlButtons', controls => {
     });
 });
 
+
+function pushAnimation({img, text, animationType} = {}) {
+    socket.executeForEveryone('runAnimation', { img, text, animationType });
+}
 
 async function runAnimation({ img, text, animationType } = {}) {
     // Create curtain and add to document
@@ -63,14 +66,13 @@ async function runAnimation({ img, text, animationType } = {}) {
     // Add text to curtain
     const textEl = document.createElement('div');
     textEl.classList.add(`${moduleID}-text`);
-    textEl.innerText = 'A new day breaks...'; // TODO: get custom text
+    textEl.innerText = text;
     curtain.appendChild(textEl);
 
     // Add image to curtain
     const image = document.createElement('img');
     image.classList.add(`${moduleID}-image`);
-    if (img) image.src = img; // TODO: get custom image src
-    else image.src = `modules/${moduleID}/images/sun.png`;
+    image.src = img;
     image.style.height = '200px';
     image.style.width = '200px';
     curtain.appendChild(image);
@@ -162,10 +164,10 @@ async function runAnimation({ img, text, animationType } = {}) {
     }
 }
 
-
 const curtainAnimationCreateDialog = async () => {
     const title = localize('dialog.title');
     const content = await renderTemplate(`modules/${moduleID}/templates/create-dialog.hbs`);
+    let text, img, cb;
     new Dialog({
         title,
         content,
@@ -173,23 +175,36 @@ const curtainAnimationCreateDialog = async () => {
             play: {
                 icon: '<i class="fa-solid fa-play"></i>',
                 label: localize('dialog.play'),
-                callback: ([html]) => {
-                    const textInput = html.querySelector('input[name="text"]');
-                    const text = textInput.value || textInput.placeholder;
-
-                    const imageInput = html.querySelector('input[name="img.src"]');
-                    const img = imageInput.value || `modules/${moduleID}/images/sun.png`;
-
-                    socket.executeForEveryone('runAnimation', { text, img });
-                }
+                callback: () => cb = 'run'
             },
             save: {
                 icon: '<i class="fa-solid fa-floppy-disk"></i>',
                 label: localize('dialog.save'),
-                callback: ([html]) => {
-
-                }
+                callback: () => cb = 'save'
             }
+        },
+        close: async ([html]) => {
+            const textInput = html.querySelector('input[name="text"]');
+            text = textInput.value || textInput.placeholder;
+
+            const imageInput = html.querySelector('input[name="img.src"]');
+            img = imageInput.value || `modules/${moduleID}/images/sun.png`;
+
+            if (cb === 'run') {
+                return socket.executeForEveryone('runAnimation', { text, img });
+            } else if (cb === 'save') {
+                const macro = await Macro.create({
+                    name: localize('CurtainAnimation'),
+                    type: 'script',
+                    scope: 'global',
+                    command: `const text = '${text}';
+                    const img = '${img}';
+                    return game.modules.get('${moduleID}').api.pushAnimation({ text, img });
+                    `
+                });
+                return macro.sheet.render(true);
+            }
+
         },
         render: ([html]) => {
             html.querySelector('button.file-picker').addEventListener('click', function() {
