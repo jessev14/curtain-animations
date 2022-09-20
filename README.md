@@ -31,3 +31,6 @@ Animation can be saved as a macro to be used later.
 - Curtain directions.
 - Input scene changes (e.g. darkness level) during curtain animation.
 - Change scenes during curtain animation.
+
+## Credit
+Sun icon by by [Lorc](https://lorcblog.blogspot.com/) under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/)
