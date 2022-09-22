@@ -29,7 +29,7 @@ Animation can be saved as a macro to be used later.
 - More complex animations.
 - More text options.
 - Curtain directions.
-- Input scene changes (e.g. darkness level) during curtain animation.
+- ~Input scene changes (e.g. darkness level) during curtain animation.~ V1.1.0
 - Change scenes during curtain animation.
 
 ## Credit
