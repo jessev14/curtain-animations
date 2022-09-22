@@ -4,12 +4,19 @@
     <input type="text" name="text" placeholder="A new day breaks..." />
 
     <div class="form-group">
-        <label>Image Path</label>
+        <label>Image</label>
         <div class="form-fields">
 
             {{filePicker type="imagevideo" target="img.src"}}
-            <input class="image" type="text" name="img.src" placeholder="path/image.png" />
+            <input class="image" type="text" name="img.src" data-type="imagevideo" placeholder="path/image.png" />
         </div>
     </div>
 
+    <div class="form-group submenu">
+        <button type="button" data-action="advanced-settings">
+            <i class="fa-solid fa-gear"></i>
+            <label>Configure Advanced Settings</label>
+        </button>
     </div>
+    
+</form>

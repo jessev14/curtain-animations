@@ -1,6 +1,8 @@
 const moduleID = 'curtain-animations';
 let socket;
 
+const log = x => console.log(x);
+
 const localize = key => game.i18n.localize(`${moduleID}.${key}`);
 
 const delay = async (duration, log = null) => {
@@ -19,7 +21,6 @@ Hooks.once('init', () => {
     };
 });
 
-
 Hooks.once('socketlib.ready', () => {
     socket = socketlib.registerModule(moduleID);
     socket.register('runAnimation', runAnimation);
@@ -27,8 +28,8 @@ Hooks.once('socketlib.ready', () => {
 
 
 Hooks.on('getSceneControlButtons', controls => {
-    const tokenControls = controls.find(c => c.name === 'token');
-    tokenControls.tools.push({
+    const lightingControls = controls.find(c => c.name === 'lighting');
+    lightingControls.tools.push({
         icon: 'fa-solid fa-booth-curtain',
         name: 'curtain',
         title: `${moduleID}.CurtainAnimation`,
@@ -43,7 +44,7 @@ function pushAnimation({img, text, animationType} = {}) {
     socket.executeForEveryone('runAnimation', { img, text, animationType });
 }
 
-async function runAnimation({ img, text, animationType } = {}) {
+async function runAnimation({ img, text, animationType, newSceneData } = {}) {
     // Create curtain and add to document
     const curtain = document.createElement('div');
     curtain.classList.add(`${moduleID}-curtain`);
@@ -58,6 +59,9 @@ async function runAnimation({ img, text, animationType } = {}) {
             if (curtainCounter >= 200) resolve();
         }, 100);
     });
+
+    // If new scene data present, update scene while curtain is dropped
+    if (newSceneData) await canvas.scene.update(newSceneData);
 
 
     await delay(1000);
@@ -165,24 +169,24 @@ async function runAnimation({ img, text, animationType } = {}) {
 }
 
 const curtainAnimationCreateDialog = async () => {
-    const title = localize('dialog.title');
-    const content = await renderTemplate(`modules/${moduleID}/templates/create-dialog.hbs`);
     let text, img, cb;
-    new Dialog({
-        title,
-        content,
-        buttons: {
-            play: {
-                icon: '<i class="fa-solid fa-play"></i>',
-                label: localize('dialog.play'),
-                callback: () => cb = 'run'
-            },
-            save: {
-                icon: '<i class="fa-solid fa-floppy-disk"></i>',
-                label: localize('dialog.save'),
-                callback: () => cb = 'save'
-            }
+    const content = await renderTemplate(`modules/${moduleID}/templates/create-dialog.hbs`);
+    const buttons = {
+        play: {
+            icon: '<i class="fa-solid fa-play"></i>',
+            label: localize('dialog.play'),
+            callback: () => cb = 'run'
         },
+        save: {
+            icon: '<i class="fa-solid fa-floppy-disk"></i>',
+            label: localize('dialog.save'),
+            callback: () => cb = 'save'
+        }
+    };
+    const dialog = new Dialog({
+        title: localize('dialog.title'),
+        content,
+        buttons,
         close: async ([html]) => {
             const textInput = html.querySelector('input[name="text"]');
             text = textInput.value || textInput.placeholder;
@@ -190,9 +194,10 @@ const curtainAnimationCreateDialog = async () => {
             const imageInput = html.querySelector('input[name="img.src"]');
             img = imageInput.value || `modules/${moduleID}/images/sun.png`;
 
-            if (cb === 'run') {
-                return socket.executeForEveryone('runAnimation', { text, img });
-            } else if (cb === 'save') {
+            const newSceneData = dialog.newSceneData;
+
+            if (cb === 'run') return socket.executeForEveryone('runAnimation', { text, img, newSceneData });
+            else if (cb === 'save') {
                 const macro = await Macro.create({
                     name: localize('CurtainAnimation'),
                     type: 'script',
@@ -207,12 +212,25 @@ const curtainAnimationCreateDialog = async () => {
 
         },
         render: ([html]) => {
-            html.querySelector('button.file-picker').addEventListener('click', function() {
-                new FilePicker({
-                    type: 'imagevideo',
-                    callback: path => html.querySelector('input[name="img.src"]').value = path
-                }).render(true);
-            })
+            const button = html.querySelector('button.file-picker');
+            const fp = FilePicker.fromButton(button);
+            fp.button.addEventListener('click', () => fp.render(true));
+
+            html.querySelector('button[data-action="advanced-settings"]').addEventListener('click', () => {
+                advancedCurtainAnimationDialog(dialog, html);
+            });
         }
     }).render(true);
+
+    async function advancedCurtainAnimationDialog(parentDialog, html) {
+        Hooks.once('renderSceneConfig', (app, [html], appData) => {
+            const submitButton = html.querySelector('button[type="submit"]');
+            submitButton.type = 'button';
+            submitButton.addEventListener('click', async function() {
+                parentDialog.newSceneData = app._getSubmitData();
+                await app.close();
+            });
+        });
+        canvas.scene.sheet.render(true);
+    }
 }
