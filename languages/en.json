@@ -12,7 +12,8 @@
             "save": "Save as Macro",
             "text": "Text",
             "image": "Image",
-            "configureScene": "Configure Scene Updates"
+            "configureScene": "Configure Scene Updates",
+            "warning": "WARNING: Executing this macro will update ALL of the CURRENTLY VIEWED scene data to match what was entered in the Scene Configuration. This includes scene name and background."
         }
     }
 }

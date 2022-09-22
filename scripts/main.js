@@ -212,7 +212,7 @@ const curtainAnimationCreateDialog = async () => {
                 if (newSceneData && !game.settings.get(moduleID, 'macroWarningDisabled')) {
                     await Dialog.prompt({
                         title: game.i18n.localize('Warning'),
-                        content: `WARNING: Executing this macro will update ALL of the CURRENTLY VIEWED scene data to match what was entered in the Advanced Settings Configuration. This includes scene name and background.`
+                        content: localize('dialog.warning')
                     });
                 }
 
