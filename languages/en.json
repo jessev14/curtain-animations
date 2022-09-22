@@ -1,10 +1,18 @@
 {
     "curtain-animations": {
         "CurtainAnimation": "Curtain Animation",
+        "settings": {
+            "macroWarningDisabled": {
+                "name": "Disable Macro Warning"
+            }
+        },
         "dialog": {
             "title": "Create New Curtain Animation",
             "play": "Play",
-            "save": "Save as Macro"
+            "save": "Save as Macro",
+            "text": "Text",
+            "image": "Image",
+            "configureScene": "Configure Scene Updates"
         }
     }
 }

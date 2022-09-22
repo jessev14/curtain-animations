@@ -19,6 +19,14 @@ Hooks.once('init', () => {
     game.modules.get(moduleID).api = {
         pushAnimation
     };
+
+    game.settings.register(moduleID, 'macroWarningDisabled', {
+        name: `${moduleID}.settings.macroWarningDisabled.name`,
+        scope: 'world',
+        config: true,
+        type: Boolean,
+        default: false
+    });
 });
 
 Hooks.once('socketlib.ready', () => {
@@ -39,11 +47,12 @@ Hooks.on('getSceneControlButtons', controls => {
     });
 });
 
-
-function pushAnimation({img, text, animationType} = {}) {
-    socket.executeForEveryone('runAnimation', { img, text, animationType });
+// Use socketlib to execute curtain animation on all clients
+function pushAnimation({img, text, animationType, newSceneData } = {}) {
+    socket.executeForEveryone('runAnimation', { img, text, animationType, newSceneData });
 }
 
+// Curtain animation
 async function runAnimation({ img, text, animationType, newSceneData } = {}) {
     // Create curtain and add to document
     const curtain = document.createElement('div');
@@ -168,6 +177,7 @@ async function runAnimation({ img, text, animationType, newSceneData } = {}) {
     }
 }
 
+// UI dialog to set animation parameters
 const curtainAnimationCreateDialog = async () => {
     let text, img, cb;
     const content = await renderTemplate(`modules/${moduleID}/templates/create-dialog.hbs`);
@@ -198,15 +208,25 @@ const curtainAnimationCreateDialog = async () => {
 
             if (cb === 'run') return socket.executeForEveryone('runAnimation', { text, img, newSceneData });
             else if (cb === 'save') {
+
+                if (newSceneData && !game.settings.get(moduleID, 'macroWarningDisabled')) {
+                    await Dialog.prompt({
+                        title: game.i18n.localize('Warning'),
+                        content: `WARNING: Executing this macro will update ALL of the CURRENTLY VIEWED scene data to match what was entered in the Advanced Settings Configuration. This includes scene name and background.`
+                    });
+                }
+
                 const macro = await Macro.create({
-                    name: localize('CurtainAnimation'),
+                    name: `${localize('CurtainAnimation')} - ${canvas.scene.name}`,
                     type: 'script',
                     scope: 'global',
                     command: `const text = '${text}';
                     const img = '${img}';
-                    return game.modules.get('${moduleID}').api.pushAnimation({ text, img });
+                    const newSceneData = ${JSON.stringify(newSceneData)};
+                    return game.modules.get('${moduleID}').api.pushAnimation({ text, img, newSceneData });
                     `
                 });
+                
                 return macro.sheet.render(true);
             }
 
