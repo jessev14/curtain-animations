@@ -27,6 +27,16 @@ Hooks.once('init', () => {
         type: Boolean,
         default: false
     });
+    
+    if (game.modules.get("foundryvtt-simple-calendar") && game.modules.get("foundryvtt-simple-calendar").active) {
+    game.settings.register(moduleID, 'advancetonextsunrise', {
+        name: `${moduleID}.settings.advancetonextsunrise.name`,
+	hint: `${moduleID}.settings.advancetonextsunrise.hint`,
+        scope: 'world',
+        config: true,
+        type: Boolean,
+        default: false
+    });}
 });
 
 Hooks.once('socketlib.ready', () => {
@@ -104,8 +114,10 @@ async function runAnimation({ img, text, animationType, newSceneData } = {}) {
 
 
     // Animate image
-    image.style.transition = 'left 3s ease-in-out';
+    image.style.transition = 'left 2s ease-in-out';
     image.style.left = '80vw';
+    if (game.modules.get("foundryvtt-simple-calendar") && game.modules.get("foundryvtt-simple-calendar").active && game.settings.get(moduleID, 'advancetonextsunrise'))
+	SimpleCalendar.api.advanceTimeToPreset(SimpleCalendar.api.PresetTimeOfDay.Sunrise)
 
 
     await delay(5000);
