@@ -114,7 +114,7 @@ async function runAnimation({ img, text, animationType, newSceneData } = {}) {
 
 
     // Animate image
-    image.style.transition = 'left 2s ease-in-out';
+    image.style.transition = 'left 3s ease-in-out';
     image.style.left = '80vw';
     if (game.modules.get("foundryvtt-simple-calendar") && game.modules.get("foundryvtt-simple-calendar").active && game.settings.get(moduleID, 'advancetonextsunrise'))
 	SimpleCalendar.api.advanceTimeToPreset(SimpleCalendar.api.PresetTimeOfDay.Sunrise)
