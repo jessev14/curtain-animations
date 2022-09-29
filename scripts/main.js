@@ -199,7 +199,7 @@ const curtainAnimationCreateDialog = async () => {
         buttons,
         close: async ([html]) => {
             const textInput = html.querySelector('input[name="text"]');
-            text = textInput.value || textInput.placeholder;
+            text = textInput.value;
 
             const imageInput = html.querySelector('input[name="img.src"]');
             img = imageInput.value || `modules/${moduleID}/images/sun.png`;
