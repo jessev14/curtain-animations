@@ -1,0 +1,23 @@
+{
+    "curtain-animations": {
+        "CurtainAnimation": "Animaci\u00F3n de Cortina",
+        "settings": {
+            "macroWarningDisabled": {
+                "name": "Eliminar Advertencia de Macro"
+            },
+	    "advancetonextsunrise": {
+	        "name": "Avanzar hasta el Siguiente Amanecer",
+		"hint": "El tiempo avanzar\u00E1 hasta el siguiente amanecer, como est\u00E9 establecido en Simple Calendar."
+	   }
+        },
+        "dialog": {
+            "title": "Crear Nueva Animaci\u00F3n de Cortina",
+            "play": "Reproducir",
+            "save": "Guardar como Macro",
+            "text": "Texto",
+            "image": "Imagen",
+            "configureScene": "Configurar Actualizaciones de Escena",
+            "warning": "ADVERTENCIA: Ejecutar esta macro actualizar\u00E1 TODOS los datos de escena ACTUALMENTE VISIBLES para igualar lo que se ha escrito en la Configuraci\u00F3n de Escena. Esto incluye el nombre y el fondo de la escena."
+        }
+    }
+}

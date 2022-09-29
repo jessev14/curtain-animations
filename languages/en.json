@@ -4,7 +4,11 @@
         "settings": {
             "macroWarningDisabled": {
                 "name": "Disable Macro Warning"
-            }
+            },
+	    "advancetonextsunrise": {
+	        "name": "Advance to Next Sunrise",
+		"hint": "Time will advance until the next sunrise, as set in Simple Calendar."
+	   }
         },
         "dialog": {
             "title": "Create New Curtain Animation",
