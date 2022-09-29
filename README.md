@@ -18,7 +18,7 @@ https://user-images.githubusercontent.com/68755874/190925822-32c766cf-0679-4b6a-
 
 
 ## Usage
-Click the new Curtain Animation toolbar button on the token toolbar.
+Click the new Curtain Animation toolbar button on the lighting toolbar.
 
 Enter text and select image to be displayed during animation.
 
